@@ -1,5 +1,6 @@
 package com.project.fitness.controller;
 
+import com.project.fitness.dto.RegisterRequest;
 import com.project.fitness.entities.User;
 import com.project.fitness.service.UserService;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public User registerUser(@RequestBody User user){
-        return userService.register(user);
+    public User registerUser(@RequestBody RegisterRequest registerRequest){
+        return userService.register(registerRequest);
     }
 }
