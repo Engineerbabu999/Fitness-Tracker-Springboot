@@ -27,8 +27,6 @@ public class UserService {
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
                 .password(request.getPassword())
-                .createdAt(LocalDateTime.parse("2007-12-03T10:15:30"))
-                .updatedAt(LocalDateTime.parse("2007-12-03T10:15:30"))
                 .build();
 
         User savedUser = userRepository.save(user);
