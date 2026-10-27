@@ -10,7 +10,9 @@ import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -20,9 +22,9 @@ public class ActivityService {
     private final ActivityRepository activityRepository;
     private final UserRepository userRepository;
 
-    public ActivityResponse trackActivity(ActivityRequest activityRequest) {
+    public ActivityResponse trackActivity(ActivityRequest activityRequest, String userId) {
 
-        User user = userRepository.findById(activityRequest.getUserId()).orElseThrow(() -> new RuntimeException("Invalid user: "+ activityRequest.getUserId()));
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("Invalid user: "+ userId));
 
         Activity activity = Activity.builder()
                 .activityType(activityRequest.getActivityType())
@@ -51,5 +53,11 @@ public class ActivityService {
         activityResponse.setAdditionalMetrics(savedActivity.getAdditionalMetrics());
 
         return  activityResponse;
+    }
+
+    public List<ActivityResponse> getUserActivities(String userId) {
+        List<Activity> activityList = activityRepository.findByUserId(userId);
+
+        return activityList.stream().map(this::mapToResponse).collect(Collectors.toList());
     }
 }
