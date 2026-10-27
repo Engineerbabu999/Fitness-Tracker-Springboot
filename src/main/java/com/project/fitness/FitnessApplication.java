@@ -1,6 +1,7 @@
 package com.project.fitness;
 
 import com.project.fitness.entities.Activity;
+import com.project.fitness.entities.User;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
