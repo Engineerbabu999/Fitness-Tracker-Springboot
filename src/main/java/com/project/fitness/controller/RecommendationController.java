@@ -7,8 +7,11 @@ import com.project.fitness.service.RecommendationService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/recommendation")
@@ -20,9 +23,17 @@ public class RecommendationController {
     @PostMapping("/generate")
     public ResponseEntity<Recommendation> generateRecommendation(
             @RequestBody RecommendationRequest request
-//            @RequestHeader('X-userId') String userId
     ){
         Recommendation recommendation = recommendationService.generateRecommendation(request);
         return ResponseEntity.ok(recommendation);
+    }
+
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<Recommendation>> getRecommendations(
+            @PathVariable String userId
+    ){
+        List<Recommendation> recommendationList = recommendationService.getUserRecommendation(userId);
+        return ResponseEntity.ok(recommendationList);
     }
 }
