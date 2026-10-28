@@ -1,7 +1,9 @@
 package com.project.fitness.controller;
 
 
+import com.project.fitness.dto.RecommendationRequest;
 import com.project.fitness.entities.Recommendation;
+import com.project.fitness.service.RecommendationService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,10 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/recommendation")
 @AllArgsConstructor
-@NoArgsConstructor
 public class RecommendationController {
 
-
+    private final RecommendationService recommendationService;
 
     @PostMapping("/generate")
     public ResponseEntity<Recommendation> generateRecommendation(
