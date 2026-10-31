@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -32,8 +33,6 @@ public class AuthController {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private JwtUtils jwtUtils;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -52,24 +51,11 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest){
 
-        try {
-            User user = userRepository.findByEmail(loginRequest.getEmail());
+        LoginResponse loginResponse = userService.login(loginRequest);
 
-            if(user == null){
-                return ResponseEntity.status(401).build();
-            }
-
-            if(!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())){
-                return ResponseEntity.status(401).build();
-            }
-
-            String token = jwtUtils.generateToken(user.getId(), user.getRole().name());
-
-            return ResponseEntity.ok(new LoginResponse(token, userService.mappedToUserResponse(user)));
-
-        } catch(AuthenticationException ee){
-            ee.printStackTrace();
-            return null;
+        if(loginResponse == null){
+            throw new BadCredentialsException("Invalid credentials");
         }
+        return ResponseEntity.ok(loginResponse);
     }
 }

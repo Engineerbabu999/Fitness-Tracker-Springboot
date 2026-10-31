@@ -1,12 +1,18 @@
 package com.project.fitness.service;
 
+import com.project.fitness.dto.LoginRequest;
+import com.project.fitness.dto.LoginResponse;
 import com.project.fitness.dto.RegisterRequest;
 import com.project.fitness.dto.UserResponse;
 import com.project.fitness.entities.User;
 
 import com.project.fitness.entities.UserRole;
 import com.project.fitness.repository.UserRepository;
+import com.project.fitness.security.JwtUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +23,10 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private JwtUtils jwtUtils;
+
 
     public UserResponse register(RegisterRequest request){
 
@@ -34,6 +44,28 @@ public class UserService {
         User savedUser = userRepository.save(user);
 
         return mappedToUserResponse(savedUser);
+    }
+
+    public LoginResponse login(LoginRequest loginRequest){
+        try {
+            User user = userRepository.findByEmail(loginRequest.getEmail());
+
+            if(user == null){
+               throw new RuntimeException("Invalid credentails");
+            }
+
+            if(!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())){
+                throw new RuntimeException("Invalid credentails");
+            }
+
+            String token = jwtUtils.generateToken(user.getId(), user.getRole().name());
+
+            return new LoginResponse(token, mappedToUserResponse(user));
+
+        } catch(AuthenticationException ee){
+            ee.printStackTrace();
+            throw new RuntimeException("Invalid credentails");
+        }
     }
 
     public UserResponse mappedToUserResponse(User savedUser) {
