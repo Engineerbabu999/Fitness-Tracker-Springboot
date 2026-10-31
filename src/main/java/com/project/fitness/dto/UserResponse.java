@@ -1,6 +1,7 @@
 package com.project.fitness.dto;
 
 
+import com.project.fitness.entities.UserRole;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,6 +17,7 @@ public class UserResponse {
     private String email;
     private String password;
     private String firstName;
+    private UserRole role;
     private String lastName;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
