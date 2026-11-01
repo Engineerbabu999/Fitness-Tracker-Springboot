@@ -16,14 +16,17 @@ import java.util.List;
 @Component
 public class JwtUtils {
 
-    private String jwtSecret = "nbag7ya9uwesjjjjj=skdjosidusd89y87whjsdkbsdjhbds78e7e77e=ekeke";
-    private int jwtExpirationMs = 172800000;
+    @org.springframework.beans.factory.annotation.Value("${jwt.secret:nbag7ya9uwesjjjjj=skdjosidusd89y87whjsdkbsdjhbds78e7e77e=ekeke}")
+    private String jwtSecret;
+
+    @org.springframework.beans.factory.annotation.Value("${jwt.expiration-ms:172800000}")
+    private int jwtExpirationMs;
 
     public String getJwtFromHeader(HttpServletRequest request){
         String bearerToken = request.getHeader("Authorization");
 
-        if(bearerToken != null && bearerToken.startsWith("Bearer")){
-            return  bearerToken.substring(7);
+        if(bearerToken != null && bearerToken.startsWith("Bearer ") && bearerToken.length() > 7){
+            return bearerToken.substring(7).trim();
         }
 
         return null;
@@ -34,6 +37,7 @@ public class JwtUtils {
         return Jwts.builder()
                 .subject(userId)
                 .claim("role", List.of(role))
+                .claim("roles", List.of(role))
                 .issuedAt(new Date())
                 .expiration(new Date(new Date().getTime() + jwtExpirationMs))
                 .signWith(key())
@@ -43,11 +47,11 @@ public class JwtUtils {
     public boolean validateJwtToken(String jwtToken){
         try{
             Jwts.parser().verifyWith((SecretKey) key()).build().parseSignedClaims(jwtToken);
-
+            return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println("Invalid JWT token: " + e.getMessage());
+            return false;
         }
-        return true;
     }
 
     private Key key(){

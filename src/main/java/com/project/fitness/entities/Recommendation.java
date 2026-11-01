@@ -53,9 +53,6 @@ public class Recommendation {
     @Column(columnDefinition = "json")
     private List<String> safety;
 
-    @JdbcTypeCode(SqlTypes.JSON)
-    @Column(columnDefinition = "json")
-
     @CreationTimestamp
     private LocalDateTime createdAt;
     @UpdateTimestamp

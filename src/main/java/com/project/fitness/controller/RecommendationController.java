@@ -31,7 +31,7 @@ public class RecommendationController {
 
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<Recommendation>> getRecommendations(
-            @PathVariable String userId
+            @PathVariable("userId") String userId
     ){
         List<Recommendation> recommendationList = recommendationService.getUserRecommendation(userId);
         return ResponseEntity.ok(recommendationList);
@@ -39,9 +39,9 @@ public class RecommendationController {
 
     @GetMapping("/activity/{activityId}")
     public ResponseEntity<List<Recommendation>> getActivityRecommendation(
-            @PathVariable String userId
+            @PathVariable("activityId") String activityId
     ){
-        List<Recommendation> recommendationList = recommendationService.getActivityRecommendation(userId);
+        List<Recommendation> recommendationList = recommendationService.getActivityRecommendation(activityId);
         return ResponseEntity.ok(recommendationList);
     }
 }

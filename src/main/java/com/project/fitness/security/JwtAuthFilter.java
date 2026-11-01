@@ -34,19 +34,34 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 String userId = jwtUtils.getUserIdFromToken(jwt);
 
                 Claims claims = jwtUtils.getClaims(jwt);
-                List<String> roles = claims.get("roles", List.class);
-                List<GrantedAuthority> authorities = List.of();
-                if(roles != null){
-                    authorities = roles.stream().map(role -> (GrantedAuthority) new SimpleGrantedAuthority(role)).toList();
+                Object roleClaim = claims.get("roles");
+                if (roleClaim == null) {
+                    roleClaim = claims.get("role");
                 }
 
-                UsernamePasswordAuthenticationToken auththentication = new UsernamePasswordAuthenticationToken(userId, null, authorities);
+                java.util.List<GrantedAuthority> authorities = new java.util.ArrayList<>();
+                if (roleClaim instanceof java.util.List<?> list) {
+                    for (Object item : list) {
+                        String r = item.toString();
+                        authorities.add(new SimpleGrantedAuthority(r));
+                        if (!r.startsWith("ROLE_")) {
+                            authorities.add(new SimpleGrantedAuthority("ROLE_" + r));
+                        }
+                    }
+                } else if (roleClaim != null) {
+                    String r = roleClaim.toString();
+                    authorities.add(new SimpleGrantedAuthority(r));
+                    if (!r.startsWith("ROLE_")) {
+                        authorities.add(new SimpleGrantedAuthority("ROLE_" + r));
+                    }
+                }
 
-                auththentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(auththentication);
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userId, null, authorities);
+                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            System.err.println("Could not set user authentication in security context: " + e.getMessage());
         }
 
         filterChain.doFilter(request,response);
