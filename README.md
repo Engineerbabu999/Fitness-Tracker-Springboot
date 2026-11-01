@@ -548,21 +548,29 @@ git push origin main
 
 ---
 
-### Step 2: Set Up a MySQL Database
-Render offers PostgreSQL out-of-the-box. For MySQL, you have two simple options:
+### Step 2: Set Up a Database (Neon PostgreSQL or MySQL)
 
-#### Option A: Managed Cloud MySQL (Recommended)
-Use a free/starter MySQL cloud database provider such as:
-- **Aiven for MySQL** (Free tier available, generates standard JDBC URL)
-- **PlanetScale** or **Railway MySQL**
-- Note your database credentials:
-  - Host (e.g. `mysql-xxxxx.aivencloud.com`)
-  - Port (e.g. `23456`)
-  - Database Name (e.g. `fitness`)
-  - User and Password
+This project supports **both PostgreSQL (Neon) and MySQL** out of the box! Hibernate automatically detects the dialect from the JDBC URL.
 
-#### Option B: Deploy MySQL on Render as a Private Service
-1. In Render Dashboard, click **New +** -> **Web Service** or **Private Service**.
+#### Option A: Neon Serverless PostgreSQL (Recommended & 100% Free)
+[Neon](https://neon.tech) is the premier free serverless PostgreSQL database:
+1. Sign up for free at [neon.tech](https://neon.tech).
+2. Create a new project (e.g. `fitness-db`).
+3. Under the **Dashboard** -> **Connection Details**, copy your connection string or individual credentials.
+4. Format your **JDBC URL** for Neon:
+   ```
+   jdbc:postgresql://<neon-endpoint-host>/neondb?sslmode=require
+   ```
+   *(Example: `jdbc:postgresql://ep-silent-fog-123456.us-east-2.aws.neon.tech/neondb?sslmode=require`)*
+5. Note your `user` and `password`.
+
+#### Option B: Cloud MySQL (Aiven / Railway / PlanetScale)
+If you prefer MySQL:
+- Sign up at [Aiven](https://aiven.io) or [Railway](https://railway.app) and spin up a free MySQL 8.0/9.0 service.
+- Use JDBC URL: `jdbc:mysql://<host>:<port>/fitness?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC`
+
+#### Option C: Deploy MySQL on Render as a Private Service
+1. In Render Dashboard, click **New +** -> **Private Service**.
 2. Name it `fitness-mysql`.
 3. Image: `mysql:8.0`.
 4. Add environment variables:
